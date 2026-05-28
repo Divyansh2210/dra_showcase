@@ -193,7 +193,45 @@ button { font-family: inherit; }
   background: var(--neutrals-85);
   border-bottom: 1px solid var(--neutrals-6);
   white-space: nowrap;
+  vertical-align: middle;
 }
+/* Top header row — model group cells (colspan=2) */
+.tasks-table thead .model-group {
+  text-align: center;
+  text-transform: none;
+  letter-spacing: 0;
+  font-weight: 600;
+  font-size: 0.8125rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--neutrals-7);
+}
+.tasks-table thead .model-group.o3     { color: var(--accent-green-dark); }
+.tasks-table thead .model-group.claude { color: var(--accent-purple-dark); }
+.tasks-table thead .model-group.gemini { color: var(--accent-blue-dark); }
+/* Bottom sub-header row — Rubric / Verifier pass rate labels */
+.tasks-table thead .sub-header th {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neutrals-3);
+  text-align: center;
+  padding: 0.5rem 0.75rem 0.625rem;
+  border-bottom: 1px solid var(--neutrals-6);
+  border-top: none;
+  background: var(--neutrals-85);
+}
+/* Vertical separators between model groups */
+.tasks-table thead .model-group + .model-group { border-left: 1px solid var(--neutrals-7); }
+.tasks-table thead .sub-header th:nth-child(3),
+.tasks-table thead .sub-header th:nth-child(5) { border-left: 1px solid var(--neutrals-7); }
+.tasks-table tbody td:nth-child(7),
+.tasks-table tbody td:nth-child(9) { border-left: 1px solid var(--neutrals-7); }
+/* Left edge of all model columns (after Difficulty) and right edge before ACCEPT */
+.tasks-table thead th:nth-child(5),
+.tasks-table thead .sub-header th:first-child,
+.tasks-table tbody td:nth-child(5),
+.tasks-table tbody td:nth-child(11) { border-left: 1px solid var(--neutrals-7); }
 .tasks-table tbody td {
   padding: 0.875rem 1rem;
   border-bottom: 1px solid var(--neutrals-7);
@@ -581,7 +619,7 @@ button { font-family: inherit; }
               <summary>How we scored</summary>
               <div class="dc-details-body">
                 <ul>
-                  <li><b>ACCEPT</b> requires VPR ≥ 80%, rubric avg ≥ 2.5, and no rubric criterion scored 0.</li>
+                  <li><b>ACCEPT</b> requires verifier pass rate ≥ 80%, rubric avg ≥ 2.5, and no rubric criterion scored 0.</li>
                   <li><b>Difficulty</b>: Hard = 0 agents accept · Medium = 1 · Easy = 2+.</li>
                   <li><b>Rubric</b> (DI · AR · RF · EP · FD) — five criteria, each 0–3. Full glossary on each task page.</li>
                   <li><b>Inputs</b> (Prompt + Reference Files) shown to agents. <b>Ground truth</b> (Sanity Check + Solution Logic + Verifiers) not shown.</li>
@@ -605,17 +643,22 @@ button { font-family: inherit; }
         <table class="tasks-table">
           <thead>
             <tr>
-              <th>#</th>
-              <th>Task</th>
-              <th>Domain</th>
-              <th>Difficulty</th>
-              <th class="col-center">o3 rubric</th>
-              <th class="col-center">o3 VPR</th>
-              <th class="col-center">Claude rubric</th>
-              <th class="col-center">Claude VPR</th>
-              <th class="col-center">Gemini rubric</th>
-              <th class="col-center">Gemini VPR</th>
-              <th>ACCEPT</th>
+              <th rowspan="2">#</th>
+              <th rowspan="2">Task</th>
+              <th rowspan="2">Domain</th>
+              <th rowspan="2">Difficulty</th>
+              <th class="model-group o3" colspan="2">OpenAI</th>
+              <th class="model-group claude" colspan="2">Claude</th>
+              <th class="model-group gemini" colspan="2">Gemini</th>
+              <th rowspan="2">ACCEPT</th>
+            </tr>
+            <tr class="sub-header">
+              <th>Rubric</th>
+              <th>Verifier pass rate</th>
+              <th>Rubric</th>
+              <th>Verifier pass rate</th>
+              <th>Rubric</th>
+              <th>Verifier pass rate</th>
             </tr>
           </thead>
           <tbody>
