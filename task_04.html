@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRA-MC-04 · Operations Optimizat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --primary-0: #eef8ff; --primary-1: #d9eeff; --primary-2: #bbe3ff;
+  --primary-3: #8cd2ff; --primary-4: #56b9ff; --primary-5: #2f9aff;
+  --primary-6: #1279f7; --primary-7: #1165e4; --primary-8: #1551b8;
+  --neutrals-0: #0d0d0d; --neutrals-1: #3b3b3b; --neutrals-2: #666666;
+  --neutrals-3: #808080; --neutrals-4: #b3b3b3; --neutrals-5: #cccccc;
+  --neutrals-6: #d9d9d9; --neutrals-7: #e6e6e6; --neutrals-8: #f2f2f2;
+  --neutrals-85: #f5f5f5; --neutrals-9: #ffffff;
+  --accent-red-lite: #eedcda; --accent-red-dull: #eaaca5;
+  --accent-red: #ce2c31; --accent-red-dark: #641818;
+  --accent-green-lite: #d7e6dd; --accent-green-dull: #a1c9b2;
+  --accent-green: #218358; --accent-green-dark: #006d43;
+  --accent-yellow-lite: #fde1b1; --accent-yellow-dull: #efbd61;
+  --accent-yellow: #e7a300; --accent-yellow-dark: #8a5c00;
+  --accent-purple-lite: #b9beed; --accent-purple-dull: #6b71cf;
+  --accent-purple: #45478d; --accent-purple-dark: #303063;
+  --accent-blue-lite: #cbddef; --accent-blue-dull: #8db1dd;
+  --accent-blue: #0d74ce; --accent-blue-dark: #0062bb;
+  --delta-tag-id: #f5ebdc;
+  --radius-sm: 0.25rem; --radius-md: 0.375rem; --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem; --radius-2xl: 1rem; --radius-pill: 9999px;
+  --shadow-sm: 0 1px 2px rgba(13, 13, 13, 0.05);
+  --shadow-md: 0 1px 3px rgba(13, 13, 13, 0.08);
+  --shadow-lg: 0 4px 12px rgba(13, 13, 13, 0.10);
+  --shadow-xl: 0 10px 25px rgba(13, 13, 13, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(13, 116, 206, 0.30);
+  --font-display: "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; scroll-behavior: smooth; }
+body {
+  background: var(--neutrals-85); font-family: var(--font-primary);
+  font-size: 1rem; line-height: 1.5; color: var(--neutrals-0);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--primary-0); }
+::-webkit-scrollbar-thumb { background: var(--accent-blue-lite); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--neutrals-3); }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+/* ─── Sidebar ─── */
+#sidebar {
+  position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+  background: var(--neutrals-85);
+  border-right: 1px solid rgba(13, 13, 13, 0.07);
+  overflow-y: auto;
+  padding: 1.25rem 0.625rem;
+  z-index: 100;
+}
+.sb-brand {
+  display: block; font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 600;
+  color: var(--neutrals-1);
+  padding: 0 0.625rem; margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.sb-section-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--neutrals-3); padding: 0 0.625rem;
+  margin: 1rem 0 0.5rem;
+}
+.sb-link {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.125rem; line-height: 1.35;
+  transition: background 0.2s ease-in-out;
+}
+.sb-link:hover { background: var(--neutrals-8); }
+.sb-link.active { background: var(--primary-0); color: var(--primary-7); font-weight: 600; }
+.sb-link .sb-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; color: var(--neutrals-3);
+  flex-shrink: 0; min-width: 1.25rem; padding-top: 0.125rem;
+}
+.sb-link .sb-task-id { color: var(--neutrals-0); font-weight: 500; }
+.sb-link.active .sb-task-id { color: var(--primary-7); }
+.sb-link .sb-domain { display: block; color: var(--neutrals-2); font-size: 0.65rem; margin-top: 0.125rem; }
+.sb-link .sb-diff {
+  font-size: 0.5625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-top: 0.125rem; display: inline-block;
+}
+.sb-diff-hard { color: var(--accent-red-dark); }
+.sb-diff-medium { color: var(--accent-yellow-dark); }
+.sb-diff-easy { color: var(--accent-green-dark); }
+.sb-summary {
+  display: block;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+  transition: background 0.2s ease-in-out;
+}
+.sb-summary:hover { background: var(--neutrals-8); }
+
+/* ─── Main ─── */
+#main { margin-left: 240px; max-width: 1440px; }
+
+/* ─── Topbar (sticky) ─── */
+.topbar {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 2.25rem;
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  position: sticky; top: 0; z-index: 50;
+  flex-wrap: wrap;
+}
+.topbar-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 600;
+  background: var(--primary-6); color: var(--neutrals-9);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+.tag-domain {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--accent-purple-dark);
+  background: var(--accent-purple-lite);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.tag-type {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-1);
+  background: var(--delta-tag-id);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.pill {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pill-diff-hard { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.pill-diff-medium { background: var(--accent-yellow-lite); color: var(--accent-yellow-dark); }
+.pill-diff-easy { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.topbar-title {
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--neutrals-2);
+  line-height: 1.35;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.topbar-summary-link {
+  font-size: 0.8125rem; font-weight: 600;
+  color: var(--primary-6);
+  white-space: nowrap;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease-in-out;
+}
+.topbar-summary-link:hover { background: var(--primary-0); }
+
+/* ─── Hero ─── */
+.hero {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 2rem 2.25rem 1.75rem;
+}
+.hero-eyebrow {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--primary-6);
+  margin-bottom: 0.5rem;
+}
+.hero-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  color: var(--neutrals-0);
+  line-height: 1.23; letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+.hero-desc {
+  font-size: 0.9375rem; color: var(--neutrals-2);
+  line-height: 1.6;
+  max-width: 60rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Metric cards row */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 1rem;
+  max-width: 60rem;
+}
+.metric-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.125rem 1.125rem;
+  box-shadow: var(--shadow-md);
+}
+.metric-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.875rem;
+}
+.badge-model {
+  color: var(--neutrals-9);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+.badge-model-o3 { background: var(--accent-green); }
+.badge-model-claude { background: var(--accent-purple); }
+.badge-model-gemini { background: var(--accent-blue); }
+.metric-accept {
+  font-size: 0.625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+.metric-accept.yes { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.metric-accept.no  { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.metric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+.metric-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+.metric-lbl {
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--neutrals-3);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.metric-lbl-suffix { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.metric-val {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  line-height: 1;
+}
+.score-low  { color: var(--accent-red-dark); }
+.score-mid  { color: var(--accent-yellow-dark); }
+.score-high { color: var(--accent-green-dark); }
+
+.accept-note {
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--neutrals-2);
+  background: var(--neutrals-85);
+  border-left: 3px solid var(--neutrals-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 0.625rem 1rem;
+  line-height: 1.6;
+  max-width: 60rem;
+}
+.accept-note b { color: var(--neutrals-1); font-weight: 600; }
+
+/* ─── Section + inputs link ─── */
+.section-header { padding: 1.5rem 2.25rem 0; }
+.section-label {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--neutrals-3);
+  margin-bottom: 0.5rem;
+}
+.section-meta { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; margin: 0.25rem 0 0; }
+.section-meta li { font-size: 0.8125rem; color: var(--neutrals-2); line-height: 1.6; }
+.section-meta li b { color: var(--neutrals-1); font-weight: 600; }
+.ref-note {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
+  display: inline-flex; align-items: center; gap: 0.375rem;
+}
+.ref-note a {
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.ref-note a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Tabs ─── */
+.tabs-wrap {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 0 2.25rem;
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.25rem;
+  position: sticky; top: 3.25rem; z-index: 40;
+}
+.tab-item { display: inline-flex; align-items: center; gap: 0.125rem; position: relative; }
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 0.75rem 0.5rem 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--neutrals-2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--neutrals-0); }
+.tab-btn.active { color: var(--primary-6); border-bottom-color: var(--primary-6); }
+.tab-btn:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; border-radius: var(--radius-sm); }
+.tab-info {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1rem; height: 1rem;
+  margin-right: 0.5rem;
+  background: var(--neutrals-7);
+  color: var(--neutrals-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.625rem; font-weight: 600;
+  border: none; cursor: help;
+  position: relative;
+}
+.tab-info:hover, .tab-info:focus { background: var(--neutrals-6); color: var(--neutrals-0); }
+.tab-info:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; }
+.tab-info .tab-pop {
+  display: none;
+  position: absolute; top: 1.75rem; left: 50%;
+  transform: translateX(-50%);
+  width: 15rem;
+  background: var(--neutrals-0);
+  color: var(--neutrals-9);
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-size: 0.75rem; font-weight: 400;
+  line-height: 1.55; text-align: left;
+  box-shadow: var(--shadow-xl);
+  z-index: 60;
+  text-transform: none; letter-spacing: 0;
+  white-space: normal;
+}
+.tab-info:hover .tab-pop, .tab-info:focus .tab-pop, .tab-info:focus-within .tab-pop { display: block; }
+.panel { display: none; padding: 1.5rem 2.25rem 2rem; max-width: 76rem; }
+.panel.active { display: block; }
+
+.prompt-ref-link { margin-bottom: 1rem; font-size: 0.8125rem; }
+.prompt-ref-link a {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.prompt-ref-link a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Content blocks ─── */
+.prompt-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-left: 3px solid var(--primary-6);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  box-shadow: var(--shadow-md);
+  max-height: 36rem;
+  overflow-y: auto;
+}
+.content-block {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  box-shadow: var(--shadow-md);
+}
+.content-block pre {
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--neutrals-1);
+}
+
+/* ─── Verifier list ─── */
+.verifier-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.verifier-item {
+  display: flex; gap: 0.625rem; align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutrals-7);
+  background: var(--neutrals-9);
+  font-size: 0.875rem; line-height: 1.55;
+  box-shadow: var(--shadow-sm);
+}
+.verifier-item .v-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-3);
+  min-width: 1.75rem;
+  padding-top: 0.1875rem;
+}
+.verifier-item .v-text { color: var(--neutrals-1); flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+<span class="sb-brand">DRA Showcase</span>
+<a class="sb-summary" href="index.html">Summary</a>
+<div class="sb-section-label">Tasks</div>
+<a class="sb-link" href="task_01.html"><span class="sb-num">01</span><span><span class="sb-task-id">DRA-MC-01</span><span class="sb-domain">Cost Optimization · CRP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_02.html"><span class="sb-num">02</span><span><span class="sb-task-id">DRA-MC-02</span><span class="sb-domain">Operations Research · LDP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_03.html"><span class="sb-num">03</span><span><span class="sb-task-id">DRA-MC-03</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link active" href="task_04.html"><span class="sb-num">04</span><span><span class="sb-task-id">DRA-MC-04</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_05.html"><span class="sb-num">05</span><span><span class="sb-task-id">DRA-MC-05</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_06.html"><span class="sb-num">06</span><span><span class="sb-task-id">DRA-MC-06</span><span class="sb-domain">Operations Optimization · LDP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_07.html"><span class="sb-num">07</span><span><span class="sb-task-id">DRA-MC-07</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_08.html"><span class="sb-num">08</span><span><span class="sb-task-id">DRA-MC-08</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_09.html"><span class="sb-num">09</span><span><span class="sb-task-id">DRA-MC-09</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_10.html"><span class="sb-num">10</span><span><span class="sb-task-id">DRA-MC-10</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_11.html"><span class="sb-num">11</span><span><span class="sb-task-id">DRA-MC-11</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link" href="task_12.html"><span class="sb-num">12</span><span><span class="sb-task-id">DRA-MC-12</span><span class="sb-domain">Cost Optimization · FSP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link" href="task_13.html"><span class="sb-num">13</span><span><span class="sb-task-id">DRA-MC-13</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+</nav>
+
+<div id="main">
+
+  <div class="topbar">
+    <span class="topbar-badge">DRA-MC-04</span>
+    <span class="tag-domain">Operations Optimizat</span>
+    <span class="tag-type">RCP</span>
+    <span class="pill pill-diff-hard">Hard</span>
+    <span class="topbar-title">ZipDash is a quick commerce operator running 12 dark stores across Bengaluru with a promis...</span>
+    <a class="topbar-summary-link" href="index.html">← Summary</a>
+  </div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Task 04 — Deep Research Agents Eval (Hard)</div>
+    <h1 class="hero-heading">DRA-MC-04</h1>
+    <p class="hero-desc">ZipDash is a quick commerce operator running 12 dark stores across Bengaluru with a promised 10 minute delivery SLA. Their highest-volume dark store at HSR Layout is consistently capping throughput at 38 orders/hour against a design target of 55 orde...</p>
+
+    <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-o3">OpenAI o3</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-low">1.20</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-low">33%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-claude">Claude</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-high">2.60</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-mid">67%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-gemini">Gemini</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-mid">2.20</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-mid">78%</div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="accept-note">
+      <b>ACCEPT criterion:</b> Verifier Pass Rate ≥ 80% <b>AND</b> rubric average ≥ 2.5 <b>AND</b> no individual rubric criterion scored 0. Rubric: 5 criteria (DI · AR · RF · EP · FD), each 0–3.
+    </div>
+  </section>
+
+  <div class="tabs-wrap">
+    <div class="tab-item">
+      <button class="tab-btn active" data-tab="prompt" onclick="setTab('prompt')">Prompt</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Prompt">i<span class="tab-pop">The exact prompt text shown to the agent, plus the reference files it was allowed to access.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="sanity" onclick="setTab('sanity')">Sanity check</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Sanity check">i<span class="tab-pop">Why the problem is well-specified, internally consistent, and deterministically solvable. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="solution" onclick="setTab('solution')">Solution logic</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Solution logic">i<span class="tab-pop">Expert-authored deterministic reasoning path with a published golden answer range. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="verifiers" onclick="setTab('verifiers')">Verifiers</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Verifiers">i<span class="tab-pop">Atomic pass/fail facts used to grade the agent's response. Each verifier is a single independently checkable claim.</span></button>
+    </div>
+  </div>
+
+  <div id="panel-prompt" class="panel active">
+    <div class="prompt-ref-link"><a href="https://drive.google.com/drive/folders/1Ia-UmQjWid0F37881gpBf7iJjWalS6GM" target="_blank" rel="noopener">Input files (Google Drive) ↗</a></div>
+    <div class="prompt-card">ZipDash is a quick commerce operator running 12 dark stores across Bengaluru with a promised 10 minute delivery SLA. Their highest-volume dark store at HSR Layout is consistently capping throughput at 38 orders/hour against a design target of 55 orders/hour -  a 31% shortfall that is directly causing SLA breaches during peak hours (7 to 9 PM). The COO must decide, before the next board review in 5 days, whether to approve a ₹18 lakh capex proposal to expand one specific stage of the dark store&#x27;s fulfillment operation. A wrong stage identification wastes the entire capex budget and leaves the throughput ceiling unresolved.
+
+Using only the provided operations files, determine which single stage - picking, packing, or dispatch is the binding constraint limiting throughput at the HSR Layout dark store. Compute the steady-state throughput rate (in orders/hour) for each stage and identify the bottleneck using ZipDash&#x27;s official bottleneck definition. Then evaluate whether the proposed ₹18 lakh capex, as specified in the capex proposal file, is sufficient to close the throughput gap to the 55 orders/hour design target.
+
+Use only the following four files. No external data, benchmarks, or market reports are permitted:
+HSR_Operations_Log_3Weeks.xlsx - Stage-level throughput logs across 3 weeks and 3 shifts
+DarkStore_Benchmarking_Report.pdf - Multi-city dark store benchmarking report
+Capex_Proposal_DispatchExpansion.xlsx - Capex model for proposed stage expansion
+ZipDash_OpsPolicy_Manual.pdf - Internal operations policy and definitions manual
+
+Throughput rates should be computed as averages across shifts within each valid week
+Only data from HSR Layout dark store is relevant to this analysis
+The steady-state baseline must conform to ZipDash&#x27;s official definition of a valid data window as stated in the OpsPolicy Manual
+All cost figures are in Indian Rupees (₹ lakh)
+
+Compute the steady-state throughput rate (orders/hour) for each of the three stages - picking, packing, and dispatch
+Identify the single binding constraint stage, citing the relevant policy definition from the OpsPolicy Manual
+Confirm whether the proposed capex targets the correct bottleneck stage
+State whether the ₹18 lakh capex is sufficient to achieve the 55 orders/hour design target - quantify any remaining gap
+Provide a one-sentence Go / Conditional Go / No-Go recommendation to the COO
+
+Deliver a structured Operations Memo containing:
+Table 1: Stage-wise steady-state throughput (orders/hour), 3 rows × 2 columns (Stage | Throughput)
+Table 2: Capex sufficiency assessment (Current capacity | Post-capex capacity | Design target | Gap)
+Section: Bottleneck identification rationale (max 100 words, citing source document and page/row)
+Section: COO Recommendation (one sentence, explicitly marked Go / Conditional Go / No-Go)
+
+Round all throughput figures to one decimal place.</div>
+  </div>
+
+  <div id="panel-sanity" class="panel">
+    <div class="content-block"><pre>Lazy AI Test:
+
+A normal model will use the 3-week aggregate average picking rate of 28.4 orders/hour from the Week Summary tab in HSR_Operations_Log_3Weeks rather than excluding the scanner-outage Week 2 flagged in the footnote, producing a picking rate 7.7 orders/hour below the correct steady-state figure of 36.1, causing it to misidentify Picking (not Dispatch) as the binding constraint and recommend ₹18 lakh capex for the wrong stage.
+
+Expert Test:
+
+Two experienced consultants, working independently with the same four files, would both reach the same conclusion: Dispatch is the binding constraint at 34.3 orders/hour steady-state (Weeks 1 and 3 only), the ₹18 lakh capex correctly targets Dispatch but is partially sufficient (closing capacity to 52 orders/hour, 3 orders/hour short of the 55 design target), and the recommendation is Conditional Go because the footnote exclusion and the OpsPolicy Manual Section 5.8 clean-week definition together leave no ambiguity about which data to use or which stage is the bottleneck.</pre></div>
+  </div>
+
+  <div id="panel-solution" class="panel">
+    <div class="content-block"><pre>1. From the Operations Log file, Sheet - Week Summary), check three weeks of data with an all-weeks combined average. Do not use the combined average. Scroll to the bottom of Sheet 2 and read the footnote. It says Week 2 (Days 8 to 14) had a scanner outage on Shift 1 and Shift 2, which artificially suppressed picking throughput. The Ops Team has flagged Week 2 as non-representative. Now open the OpsPolicy Manual and go to Section 5.8. It confirms that any week flagged by the Ops Team must be excluded from steady-state calculations. So exclude Week 2 entirely. Only use Week 1 and Week 3.
+
+2. Calculate the correct throughput for each stage
+Take the Week 1 average and Week 3 average for each stage and find their simple average.
+Picking: Week 1 is 36.1, Week 3 is 36.4. Average is 36.3 orders per hour.
+Packing: Week 1 is 41.0, Week 3 is 41.4. Average is 41.2 orders per hour.
+Dispatch: Week 1 is 33.9, Week 3 is 34.7. Average is 34.3 orders per hour.
+
+These are your steady-state figures. The trap figure for Picking is 28.4 (wrong - includes Week 2).
+
+3. OpsPolicy Manual Section 5.9. It says the binding constraint is the stage with the lowest steady-state throughput. Picking is 36.3, Packing is 41.2, Dispatch is 34.3. Dispatch is the lowest. Dispatch is the bottleneck.
+
+4. From the capex file. Sheet 1 shows the proposal targets the Dispatch stage, which is correct. It proposes adding 2 bays to the existing 4, giving 6 bays total. Post-expansion dispatch capacity is 52.0 orders per hour.
+
+5. The design target is 55 orders per hour (from OpsPolicy Manual Page Section 5.9). Post-expansion capacity is 52. That leaves a gap of 3 orders per hour. The capex is partially sufficient - it closes most of the gap but not all of it. Per Section 5.10 of the OpsPolicy Manual, a supplementary action plan is required for the remaining gap.
+
+6. The recommendation is Conditional Go. Approve the ₹18 lakh capex because it correctly targets the bottleneck stage and closes 86% of the throughput gap (18 out of 21 orders per hour). However, a supplementary operational plan must be submitted to close the remaining 3 orders per hour shortfall before the 55 orders per hour design target is declared achieved.
+
+Golden Range:
+
+Picking steady-state: 36.3 orders/hour
+Packing steady-state: 41.2 orders/hour
+Dispatch steady-state: 34.3 orders/hour (bottleneck)
+Trap (wrong) picking figure: 28.4 orders/hour
+Post-capex dispatch capacity: 52 orders/hour
+Design target: 55 orders/hour
+Remaining gap after capex: 3 orders/hour</pre></div>
+  </div>
+
+  <div id="panel-verifiers" class="panel">
+    <div class="verifier-list">
+              <div class="verifier-item"><span class="v-num">V01</span><span class="v-text">Week 2 (Days 8–14) excluded from steady-state baseline = Yes</span></div>
+              <div class="verifier-item"><span class="v-num">V02</span><span class="v-text">Reason for Week 2 exclusion = Scanner outage on Shift 1 and Shift 2, flagged in footnote of HSR_Operations_Log_3Weeks Sheet 2, Weekly Summary</span></div>
+              <div class="verifier-item"><span class="v-num">V03</span><span class="v-text">Policy reference cited for exclusion = Section 5.8</span></div>
+              <div class="verifier-item"><span class="v-num">V04</span><span class="v-text">Steady-state picking throughput = 36.3 orders/hour (0.5 tolerance), NOT 28.4</span></div>
+              <div class="verifier-item"><span class="v-num">V05</span><span class="v-text">Steady-state packing throughput = 41.2 orders/hour (0.5 tolerance)</span></div>
+              <div class="verifier-item"><span class="v-num">V06</span><span class="v-text">Steady-state dispatch throughput = 34.3 orders/hour (0.5 tolerance)</span></div>
+              <div class="verifier-item"><span class="v-num">V07</span><span class="v-text">Binding constraint stage identified = Dispatch</span></div>
+              <div class="verifier-item"><span class="v-num">V08</span><span class="v-text">Policy reference cited for bottleneck definition = Section 5.9</span></div>
+              <div class="verifier-item"><span class="v-num">V09</span><span class="v-text">Capex proposal target stage = Dispatch (confirmed from Capex_Proposal_DispatchExpansion Sheet 1)</span></div>
+              <div class="verifier-item"><span class="v-num">V10</span><span class="v-text">Post-expansion dispatch capacity = 52 orders/hour (0.5 tolerance)</span></div>
+              <div class="verifier-item"><span class="v-num">V11</span><span class="v-text">Design target used = 55 orders/hour</span></div>
+              <div class="verifier-item"><span class="v-num">V12</span><span class="v-text">Throughput gap after capex expansion = 3 orders/hour (0.5 tolerance)</span></div>
+              <div class="verifier-item"><span class="v-num">V13</span><span class="v-text">Capex verdict = Partially Sufficient (not Sufficient)</span></div>
+              <div class="verifier-item"><span class="v-num">V14</span><span class="v-text">Policy reference for partial sufficiency = Section 5.10</span></div>
+              <div class="verifier-item"><span class="v-num">V15</span><span class="v-text">Delhi, Mumbai, Hyderabad benchmark data from DarkStore_Benchmarking_Report.pdf = Explicitly excluded from analysis</span></div>
+              <div class="verifier-item"><span class="v-num">V16</span><span class="v-text">COO recommendation = Conditional Go (not Go, not No-Go)</span></div>
+              <div class="verifier-item"><span class="v-num">V17</span><span class="v-text">Supplementary action plan requirement for 3 orders/hour gap = Identified and stated</span></div>
+              <div class="verifier-item"><span class="v-num">V18</span><span class="v-text">Throughput computation basis = Week 1 and Week 3 averages only (minimum 2 clean weeks per Section 5.8)</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.id === 'panel-' + tab));
+}
+</script>
+
+</body>
+</html>

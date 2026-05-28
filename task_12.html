@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRA-MC-12 · Cost Optimization</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --primary-0: #eef8ff; --primary-1: #d9eeff; --primary-2: #bbe3ff;
+  --primary-3: #8cd2ff; --primary-4: #56b9ff; --primary-5: #2f9aff;
+  --primary-6: #1279f7; --primary-7: #1165e4; --primary-8: #1551b8;
+  --neutrals-0: #0d0d0d; --neutrals-1: #3b3b3b; --neutrals-2: #666666;
+  --neutrals-3: #808080; --neutrals-4: #b3b3b3; --neutrals-5: #cccccc;
+  --neutrals-6: #d9d9d9; --neutrals-7: #e6e6e6; --neutrals-8: #f2f2f2;
+  --neutrals-85: #f5f5f5; --neutrals-9: #ffffff;
+  --accent-red-lite: #eedcda; --accent-red-dull: #eaaca5;
+  --accent-red: #ce2c31; --accent-red-dark: #641818;
+  --accent-green-lite: #d7e6dd; --accent-green-dull: #a1c9b2;
+  --accent-green: #218358; --accent-green-dark: #006d43;
+  --accent-yellow-lite: #fde1b1; --accent-yellow-dull: #efbd61;
+  --accent-yellow: #e7a300; --accent-yellow-dark: #8a5c00;
+  --accent-purple-lite: #b9beed; --accent-purple-dull: #6b71cf;
+  --accent-purple: #45478d; --accent-purple-dark: #303063;
+  --accent-blue-lite: #cbddef; --accent-blue-dull: #8db1dd;
+  --accent-blue: #0d74ce; --accent-blue-dark: #0062bb;
+  --delta-tag-id: #f5ebdc;
+  --radius-sm: 0.25rem; --radius-md: 0.375rem; --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem; --radius-2xl: 1rem; --radius-pill: 9999px;
+  --shadow-sm: 0 1px 2px rgba(13, 13, 13, 0.05);
+  --shadow-md: 0 1px 3px rgba(13, 13, 13, 0.08);
+  --shadow-lg: 0 4px 12px rgba(13, 13, 13, 0.10);
+  --shadow-xl: 0 10px 25px rgba(13, 13, 13, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(13, 116, 206, 0.30);
+  --font-display: "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; scroll-behavior: smooth; }
+body {
+  background: var(--neutrals-85); font-family: var(--font-primary);
+  font-size: 1rem; line-height: 1.5; color: var(--neutrals-0);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--primary-0); }
+::-webkit-scrollbar-thumb { background: var(--accent-blue-lite); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--neutrals-3); }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+/* ─── Sidebar ─── */
+#sidebar {
+  position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+  background: var(--neutrals-85);
+  border-right: 1px solid rgba(13, 13, 13, 0.07);
+  overflow-y: auto;
+  padding: 1.25rem 0.625rem;
+  z-index: 100;
+}
+.sb-brand {
+  display: block; font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 600;
+  color: var(--neutrals-1);
+  padding: 0 0.625rem; margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.sb-section-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--neutrals-3); padding: 0 0.625rem;
+  margin: 1rem 0 0.5rem;
+}
+.sb-link {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.125rem; line-height: 1.35;
+  transition: background 0.2s ease-in-out;
+}
+.sb-link:hover { background: var(--neutrals-8); }
+.sb-link.active { background: var(--primary-0); color: var(--primary-7); font-weight: 600; }
+.sb-link .sb-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; color: var(--neutrals-3);
+  flex-shrink: 0; min-width: 1.25rem; padding-top: 0.125rem;
+}
+.sb-link .sb-task-id { color: var(--neutrals-0); font-weight: 500; }
+.sb-link.active .sb-task-id { color: var(--primary-7); }
+.sb-link .sb-domain { display: block; color: var(--neutrals-2); font-size: 0.65rem; margin-top: 0.125rem; }
+.sb-link .sb-diff {
+  font-size: 0.5625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-top: 0.125rem; display: inline-block;
+}
+.sb-diff-hard { color: var(--accent-red-dark); }
+.sb-diff-medium { color: var(--accent-yellow-dark); }
+.sb-diff-easy { color: var(--accent-green-dark); }
+.sb-summary {
+  display: block;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+  transition: background 0.2s ease-in-out;
+}
+.sb-summary:hover { background: var(--neutrals-8); }
+
+/* ─── Main ─── */
+#main { margin-left: 240px; max-width: 1440px; }
+
+/* ─── Topbar (sticky) ─── */
+.topbar {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 2.25rem;
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  position: sticky; top: 0; z-index: 50;
+  flex-wrap: wrap;
+}
+.topbar-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 600;
+  background: var(--primary-6); color: var(--neutrals-9);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+.tag-domain {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--accent-purple-dark);
+  background: var(--accent-purple-lite);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.tag-type {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-1);
+  background: var(--delta-tag-id);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.pill {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pill-diff-hard { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.pill-diff-medium { background: var(--accent-yellow-lite); color: var(--accent-yellow-dark); }
+.pill-diff-easy { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.topbar-title {
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--neutrals-2);
+  line-height: 1.35;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.topbar-summary-link {
+  font-size: 0.8125rem; font-weight: 600;
+  color: var(--primary-6);
+  white-space: nowrap;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease-in-out;
+}
+.topbar-summary-link:hover { background: var(--primary-0); }
+
+/* ─── Hero ─── */
+.hero {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 2rem 2.25rem 1.75rem;
+}
+.hero-eyebrow {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--primary-6);
+  margin-bottom: 0.5rem;
+}
+.hero-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  color: var(--neutrals-0);
+  line-height: 1.23; letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+.hero-desc {
+  font-size: 0.9375rem; color: var(--neutrals-2);
+  line-height: 1.6;
+  max-width: 60rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Metric cards row */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 1rem;
+  max-width: 60rem;
+}
+.metric-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.125rem 1.125rem;
+  box-shadow: var(--shadow-md);
+}
+.metric-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.875rem;
+}
+.badge-model {
+  color: var(--neutrals-9);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+.badge-model-o3 { background: var(--accent-green); }
+.badge-model-claude { background: var(--accent-purple); }
+.badge-model-gemini { background: var(--accent-blue); }
+.metric-accept {
+  font-size: 0.625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+.metric-accept.yes { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.metric-accept.no  { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.metric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+.metric-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+.metric-lbl {
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--neutrals-3);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.metric-lbl-suffix { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.metric-val {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  line-height: 1;
+}
+.score-low  { color: var(--accent-red-dark); }
+.score-mid  { color: var(--accent-yellow-dark); }
+.score-high { color: var(--accent-green-dark); }
+
+.accept-note {
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--neutrals-2);
+  background: var(--neutrals-85);
+  border-left: 3px solid var(--neutrals-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 0.625rem 1rem;
+  line-height: 1.6;
+  max-width: 60rem;
+}
+.accept-note b { color: var(--neutrals-1); font-weight: 600; }
+
+/* ─── Section + inputs link ─── */
+.section-header { padding: 1.5rem 2.25rem 0; }
+.section-label {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--neutrals-3);
+  margin-bottom: 0.5rem;
+}
+.section-meta { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; margin: 0.25rem 0 0; }
+.section-meta li { font-size: 0.8125rem; color: var(--neutrals-2); line-height: 1.6; }
+.section-meta li b { color: var(--neutrals-1); font-weight: 600; }
+.ref-note {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
+  display: inline-flex; align-items: center; gap: 0.375rem;
+}
+.ref-note a {
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.ref-note a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Tabs ─── */
+.tabs-wrap {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 0 2.25rem;
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.25rem;
+  position: sticky; top: 3.25rem; z-index: 40;
+}
+.tab-item { display: inline-flex; align-items: center; gap: 0.125rem; position: relative; }
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 0.75rem 0.5rem 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--neutrals-2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--neutrals-0); }
+.tab-btn.active { color: var(--primary-6); border-bottom-color: var(--primary-6); }
+.tab-btn:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; border-radius: var(--radius-sm); }
+.tab-info {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1rem; height: 1rem;
+  margin-right: 0.5rem;
+  background: var(--neutrals-7);
+  color: var(--neutrals-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.625rem; font-weight: 600;
+  border: none; cursor: help;
+  position: relative;
+}
+.tab-info:hover, .tab-info:focus { background: var(--neutrals-6); color: var(--neutrals-0); }
+.tab-info:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; }
+.tab-info .tab-pop {
+  display: none;
+  position: absolute; top: 1.75rem; left: 50%;
+  transform: translateX(-50%);
+  width: 15rem;
+  background: var(--neutrals-0);
+  color: var(--neutrals-9);
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-size: 0.75rem; font-weight: 400;
+  line-height: 1.55; text-align: left;
+  box-shadow: var(--shadow-xl);
+  z-index: 60;
+  text-transform: none; letter-spacing: 0;
+  white-space: normal;
+}
+.tab-info:hover .tab-pop, .tab-info:focus .tab-pop, .tab-info:focus-within .tab-pop { display: block; }
+.panel { display: none; padding: 1.5rem 2.25rem 2rem; max-width: 76rem; }
+.panel.active { display: block; }
+
+.prompt-ref-link { margin-bottom: 1rem; font-size: 0.8125rem; }
+.prompt-ref-link a {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.prompt-ref-link a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Content blocks ─── */
+.prompt-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-left: 3px solid var(--primary-6);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  box-shadow: var(--shadow-md);
+  max-height: 36rem;
+  overflow-y: auto;
+}
+.content-block {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  box-shadow: var(--shadow-md);
+}
+.content-block pre {
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--neutrals-1);
+}
+
+/* ─── Verifier list ─── */
+.verifier-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.verifier-item {
+  display: flex; gap: 0.625rem; align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutrals-7);
+  background: var(--neutrals-9);
+  font-size: 0.875rem; line-height: 1.55;
+  box-shadow: var(--shadow-sm);
+}
+.verifier-item .v-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-3);
+  min-width: 1.75rem;
+  padding-top: 0.1875rem;
+}
+.verifier-item .v-text { color: var(--neutrals-1); flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+<span class="sb-brand">DRA Showcase</span>
+<a class="sb-summary" href="index.html">Summary</a>
+<div class="sb-section-label">Tasks</div>
+<a class="sb-link" href="task_01.html"><span class="sb-num">01</span><span><span class="sb-task-id">DRA-MC-01</span><span class="sb-domain">Cost Optimization · CRP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_02.html"><span class="sb-num">02</span><span><span class="sb-task-id">DRA-MC-02</span><span class="sb-domain">Operations Research · LDP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_03.html"><span class="sb-num">03</span><span><span class="sb-task-id">DRA-MC-03</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_04.html"><span class="sb-num">04</span><span><span class="sb-task-id">DRA-MC-04</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_05.html"><span class="sb-num">05</span><span><span class="sb-task-id">DRA-MC-05</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_06.html"><span class="sb-num">06</span><span><span class="sb-task-id">DRA-MC-06</span><span class="sb-domain">Operations Optimization · LDP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_07.html"><span class="sb-num">07</span><span><span class="sb-task-id">DRA-MC-07</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_08.html"><span class="sb-num">08</span><span><span class="sb-task-id">DRA-MC-08</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_09.html"><span class="sb-num">09</span><span><span class="sb-task-id">DRA-MC-09</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_10.html"><span class="sb-num">10</span><span><span class="sb-task-id">DRA-MC-10</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_11.html"><span class="sb-num">11</span><span><span class="sb-task-id">DRA-MC-11</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link active" href="task_12.html"><span class="sb-num">12</span><span><span class="sb-task-id">DRA-MC-12</span><span class="sb-domain">Cost Optimization · FSP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link" href="task_13.html"><span class="sb-num">13</span><span><span class="sb-task-id">DRA-MC-13</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+</nav>
+
+<div id="main">
+
+  <div class="topbar">
+    <span class="topbar-badge">DRA-MC-12</span>
+    <span class="tag-domain">Cost Optimization</span>
+    <span class="tag-type">FSP</span>
+    <span class="pill pill-diff-easy">Easy</span>
+    <span class="topbar-title">SKB Food Products Pvt. Ltd. is a Delhi-based FMCG manufacturer running for close to 30 yea...</span>
+    <a class="topbar-summary-link" href="index.html">← Summary</a>
+  </div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Task 12 — Deep Research Agents Eval (Easy)</div>
+    <h1 class="hero-heading">DRA-MC-12</h1>
+    <p class="hero-desc">SKB Food Products Pvt. Ltd. is a Delhi-based FMCG manufacturer running for close to 30 years now, making things like roasted snacks, breakfast cereals, vermicelli and dry fruit mixes under their Yum Yum brand. Nothing fancy they&amp;#x27;re a mid-sized operat...</p>
+
+    <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-o3">OpenAI o3</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-low">1.40</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-low">20%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-claude">Claude</span>
+            <span class="metric-accept yes">Accept</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-high">2.80</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-high">87%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-gemini">Gemini</span>
+            <span class="metric-accept yes">Accept</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-high">2.80</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-high">93%</div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="accept-note">
+      <b>ACCEPT criterion:</b> Verifier Pass Rate ≥ 80% <b>AND</b> rubric average ≥ 2.5 <b>AND</b> no individual rubric criterion scored 0. Rubric: 5 criteria (DI · AR · RF · EP · FD), each 0–3.
+    </div>
+  </section>
+
+  <div class="tabs-wrap">
+    <div class="tab-item">
+      <button class="tab-btn active" data-tab="prompt" onclick="setTab('prompt')">Prompt</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Prompt">i<span class="tab-pop">The exact prompt text shown to the agent, plus the reference files it was allowed to access.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="sanity" onclick="setTab('sanity')">Sanity check</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Sanity check">i<span class="tab-pop">Why the problem is well-specified, internally consistent, and deterministically solvable. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="solution" onclick="setTab('solution')">Solution logic</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Solution logic">i<span class="tab-pop">Expert-authored deterministic reasoning path with a published golden answer range. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="verifiers" onclick="setTab('verifiers')">Verifiers</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Verifiers">i<span class="tab-pop">Atomic pass/fail facts used to grade the agent's response. Each verifier is a single independently checkable claim.</span></button>
+    </div>
+  </div>
+
+  <div id="panel-prompt" class="panel active">
+    <div class="prompt-ref-link"><a href="https://drive.google.com/drive/folders/1yJ8KECyH4svajT1CY35Y7PME-Ik95C_W?usp=drive_link" target="_blank" rel="noopener">Input files (Google Drive) ↗</a></div>
+    <div class="prompt-card">SKB Food Products Pvt. Ltd. is a Delhi-based FMCG manufacturer running for close to 30 years now, making things like roasted snacks, breakfast cereals, vermicelli and dry fruit mixes under their Yum Yum brand. Nothing fancy they&#x27;re a mid-sized operation, somewhere around ₹18–22 Cr revenue, distributing primarily through General Trade and some Modern Trade across Delhi-NCR and Punjab.
+SKB Food Products (₹18–22 Cr FMCG player) currently sources packaging from Pragati (Supplier A). A disruption exposed single-source risk.
+Vardhman (Supplier B) offers ~7% lower base price; proposed at 30% allocation.
+CFO requires rigorous TCO validation using RBI Repo Rate (official source only). Wrong decision risks ₹14–18L annual margin loss.
+Task
+Using provided files (+ RBI website for repo rate), compute Total Effective Cost (TEC) per 1,000 pouches for both suppliers across 4 SKUs.
+TEC Components (MANDATORY – no additions/removals)
+Landed Cost = Base price + freight + QC
+Defect Cost = Rejection rate × 1000 × ₹4.20
+Working Capital Cost =
+Landed Cost × (Payment Days / 365) × RBI Repo Rate
+Repo rate must be sourced from rbi.org.in (MPC release only)
+Inventory Cost =
+Landed Cost × 15% × (Lead Time / 365)
+TEC = Sum of above
+Analysis Required
+Compute TEC for 4 SKUs × 2 suppliers (8 cases)
+Scale to annual cost using volumes
+Compare:
+Scenario A: 100% Supplier A
+Scenario B: 70% A + 30% B
+Critical Constraint (NON-NEGOTIABLE)
+Repo rate must be verified from RBI MPC release
+If mismatch with file:
+Flag it
+Provide correct rate + RBI URL
+Recalculate all costs
+OUTPUT FORMAT
+Deliver a Procurement Decision Memo of 3 to 4 pages. It must have exactly these four sections in this order:
+Section 1, Executive Summary: Keep it to 120–150 words. State your recommendation upfront. Include the RBI Repo Rate you used, the URL you sourced it from, and whether the file&#x27;s embedded rate was accurate or stale.
+Section 2, Per-Unit Cost Build: A clean table showing all five TEC components for both suppliers for each of the four SKUs. Values in ₹ per 1,000 pouches, rounded to two decimal places. Intermediate calculations must be shown not just final numbers.
+Section 3, Annual Cost Comparison: Show Scenario A total and Scenario B total in ₹ Lakh, and state the annual cost delta.
+Section 4, Recommendation: Retain or Introduce, in one clear sentence. Follow with one paragraph of rationale covering the cost delta, the quality differential from File 2, and any conditions that would need to be met before Supplier B could be reconsidered.
+None of these four sections may be skipped or merged. If the RBI rate you find differs from what&#x27;s in the file, you must flag this in Section 1 not bury it in a footnote.
+DECISION ARCHETYPE
+Retain / Introduce should Vardhman Packtech be brought on as an approved packaging vendor at 30% volume?</div>
+  </div>
+
+  <div id="panel-sanity" class="panel">
+    <div class="content-block"><pre>LAZY AI TEST:
+GPT-4o will read the 8.25% value from the yellow-highlighted cell in File 1 and use it directly without verifying it against rbi.org.in. At 8.25%, the working capital cost for Supplier A on the Snacks SKU comes to approximately ₹19.20 per 1,000 pouches rather than the correct ₹12.23. Across all four SKUs and a full year at 100% Supplier A volume, this inflates Scenario A&#x27;s annual cost by roughly ₹6.2 Lakh artificially widening the gap between the two scenarios and making dual-sourcing appear to save ₹6.8–7.5 Lakh annually rather than the actual ₹67,000. At ₹6.8 Lakh apparent savings, a model will recommend introducing Supplier B. At the correct ₹67,000, the quality risk does not justify it. The rate error flips the recommendation.
+EXPERT TEST:
+An MC analyst who fetches the December 2025 MPC press release from rbi.org.in, corrects the repo rate to 5.25%, applies it in the working capital formula with supplier-specific payment terms (45 days for A, 30 days for B), adds defect and inventory carrying costs using the lead times from File 1, and reads the quality scorecard from File 2 will arrive at a Scenario A total of approximately ₹197.86 Lakh and a Scenario B total of approximately ₹197.19 Lakh. The saving is ₹67,000 less than 0.35% of packaging spend insufficient to recommend introducing a vendor with a below-threshold audit score and a nearly double rejection rate. One correct answer exists.</pre></div>
+  </div>
+
+  <div id="panel-solution" class="panel">
+    <div class="content-block"><pre>Before doing any calculations, the first step is to validate the RBI Repo Rate.
+The model currently uses 8.25%, but this is incorrect. The latest RBI MPC resolution (Dec 5, 2025) shows the rate as 5.25%. This means the model is off by 300 basis points, which is a significant error.
+So, the correct approach is:
+Replace 8.25% with 5.25%
+This step is critical because even a small rate error can distort cost comparisons.
+
+Step 1: Landed Cost per 1,000 Pouches (Base Price + Freight + QC)
+Formula: Base Price + Freight + QC
+Supplier A (Local): Freight ₹38, QC ₹12
+Snacks 250g: 1,840 + 38 + 12 = ₹1,890
+Cereal 500g: 2,180 + 38 + 12 = ₹2,230
+Vermicelli 200g: 1,620 + 38 + 12 = ₹1,670
+Dry Fruits 1kg: 2,640 + 38 + 12 = ₹2,690
+Supplier B (Ludhiana): Freight ₹87, QC ₹12
+Snacks 250g: 1,710 + 87 + 12 = ₹1,809
+Cereal 500g: 2,020 + 87 + 12 = ₹2,119
+Vermicelli 200g: 1,495 + 87 + 12 = ₹1,594
+Dry Fruits 1kg: 2,430 + 87 + 12 = ₹2,529
+Supplier B wins on landed cost for every SKU.
+
+Step 2: Defect &amp; Rejection Cost per 1,000 Pouches
+Formula: Rejection Rate × 1,000 × ₹4.20 (rework + disposal)
+Supplier A (1.8%): 0.018 × 1,000 × 4.20 = ₹75.60 (all SKUs)
+Supplier B (3.4% – 90‑day trial only): 0.034 × 1,000 × 4.20 = ₹142.80 (all SKUs)
+Supplier A advantage: ₹67.20 per 1,000 pouches.
+
+Step 3: Working Capital Financing Cost per 1,000 Pouches
+Formula: Landed Cost × (Payment Terms / 365) × Corrected Repo Rate (5.25%)
+
+Supplier A (Net 45 days):
+Snacks: 1,890 × (45/365) × 0.0525 = ₹12.23
+Cereal: 2,230 × (45/365) × 0.0525 = ₹14.43
+Vermicelli: 1,670 × (45/365) × 0.0525 = ₹10.81
+Dry Fruits: 2,690 × (45/365) × 0.0525 = ₹17.41
+
+Supplier B (Net 30 days):
+Snacks: 1,809 × (30/365) × 0.0525 = ₹7.81
+Cereal: 2,119 × (30/365) × 0.0525 = ₹9.14
+Vermicelli: 1,594 × (30/365) × 0.0525 = ₹6.88
+Dry Fruits: 2,529 × (30/365) × 0.0525 = ₹10.91
+
+Supplier B advantage here due to shorter payment terms.
+
+Step 4: Inventory Carrying Cost per 1,000 Pouches
+Formula: Landed Cost × 15% × (Lead Time / 365)
+
+Supplier A (Lead time 12 days):
+Snacks: 1,890 × 0.15 × (12/365) = ₹9.32
+Cereal: 2,230 × 0.15 × (12/365) = ₹10.99
+Vermicelli: 1,670 × 0.15 × (12/365) = ₹8.23
+Dry Fruits: 2,690 × 0.15 × (12/365) = ₹13.27
+
+Supplier B (Lead time 22 days):
+Snacks: 1,809 × 0.15 × (22/365) = ₹16.36
+Cereal: 2,119 × 0.15 × (22/365) = ₹19.16
+Vermicelli: 1,594 × 0.15 × (22/365) = ₹14.41
+Dry Fruits: 2,529 × 0.15 × (22/365) = ₹22.87
+
+Supplier A advantage due to shorter lead time.
+
+Step 5: Total Effective Cost (TEC) per 1,000 Pouches
+Formula: Landed + Defect + WC Financing + Inventory Carrying
+
+Supplier A:
+Snacks: 1,890 + 75.60 + 12.23 + 9.32 = ₹1,987.15
+Cereal: 2,230 + 75.60 + 14.43 + 10.99 = ₹2,331.02
+Vermicelli: 1,670 + 75.60 + 10.81 + 8.23 = ₹1,764.64
+Dry Fruits: 2,690 + 75.60 + 17.41 + 13.27 = ₹2,796.28
+
+Supplier B:
+
+Snacks: 1,809 + 142.80 + 7.81 + 16.36 = ₹1,975.97
+Cereal: 2,119 + 142.80 + 9.14 + 19.16 = ₹2,290.10
+Vermicelli: 1,594 + 142.80 + 6.88 + 14.41 = ₹1,758.09
+Dry Fruits: 2,529 + 142.80 + 10.91 + 22.87 = ₹2,705.58
+
+Supplier B remains cheaper on TEC for all SKUs, but margins are narrow (₹7–₹91 per 1,000).
+
+Step 6: Annual Cost Comparison – Scenario A vs. Scenario B
+Volumes (pouches/1,000): Snacks 4,200 | Cereal 1,800 | Vermicelli 2,600 | Dry Fruits 950
+
+Scenario A (100% Supplier A):
+Snacks: 4,200 × 1,987.15 = ₹83,46,030
+Cereal: 1,800 × 2,331.02 = ₹41,95,836
+Vermicelli: 2,600 × 1,764.64 = ₹45,88,064
+Dry Fruits: 950 × 2,796.28 = ₹26,56,466
+Total = ₹1,97,86,396 (~₹197.86 Lakh)
+
+Scenario B (70% A / 30% B blend):
+Blended TEC = (0.7 × TEC_A) + (0.3 × TEC_B)
+
+Snacks: (0.7×1,987.15)+(0.3×1,975.97) = ₹1,983.80
+Cereal: (0.7×2,331.02)+(0.3×2,290.10) = ₹2,318.74
+Vermicelli: (0.7×1,764.64)+(0.3×1,758.09) = ₹1,762.68
+Dry Fruits: (0.7×2,796.28)+(0.3×2,705.58) = ₹2,769.07
+
+Annual:
+Snacks: 4,200 × 1,983.80 = ₹83,31,960
+Cereal: 1,800 × 2,318.74 = ₹41,73,732
+Vermicelli: 2,600 × 1,762.68 = ₹45,82,968
+Dry Fruits: 950 × 2,769.07 = ₹26,30,617
+Total = ₹1,97,19,277 (~₹197.19 Lakh)
+
+Annual saving from Scenario B = ₹67,119 (≈0.34% of spend)
+
+Step 7: Final Recommendation
+Do not switch to dual sourcing.
+Annual saving of ₹67,000 is immaterial relative to operational complexity.
+Supplier B’s quality metrics are below threshold:
+Quality score 3.80 vs. A’s 4.57
+Audit score 67 (below 70)
+4 open corrective action items
+Rejection rate of 3.4% based on only 90 days of trial data.
+
+Decision: Retain Supplier A as sole approved vendor for FY25.
+
+Conditional path for Supplier B: Reconsider for FY26 Q2 only if:
+All 4 CAP items closed.
+Audit score &gt;70.
+Defect rate &lt;2.5% over two full quarters of trial volume.</pre></div>
+  </div>
+
+  <div id="panel-verifiers" class="panel">
+    <div class="verifier-list">
+              <div class="verifier-item"><span class="v-num">V01</span><span class="v-text">RBI Repo Rate used in working capital cost computation = 5.25%, sourced from rbi.org.in MPC press release dated December 5, 2025,</span></div>
+              <div class="verifier-item"><span class="v-num">V02</span><span class="v-text">File 1&#x27;s embedded rate of 8.25% explicitly flagged as stale in the memo&#x27;s Executive Summary section, not buried in a footnote,</span></div>
+              <div class="verifier-item"><span class="v-num">V03</span><span class="v-text">Source URL for the RBI rate cited in the memo output must be a direct link to the RBI monetary policy page, not a third-party site,</span></div>
+              <div class="verifier-item"><span class="v-num">V04</span><span class="v-text">Landed cost Supplier A, Snacks 250g pouch = ₹1,890 per 1,000 pouches (1,840 base + 38 freight + 12 QC),</span></div>
+              <div class="verifier-item"><span class="v-num">V05</span><span class="v-text">Landed cost Supplier B, Snacks 250g pouch = ₹1,809 per 1,000 pouches (1,710 base + 87 freight + 12 QC),</span></div>
+              <div class="verifier-item"><span class="v-num">V06</span><span class="v-text">Defect cost Supplier A, all SKUs = ₹75.60 per 1,000 pouches (0.018 × 1,000 × ₹4.20),</span></div>
+              <div class="verifier-item"><span class="v-num">V07</span><span class="v-text">Defect cost Supplier B, all SKUs = ₹142.80 per 1,000 pouches (0.034 × 1,000 × ₹4.20),</span></div>
+              <div class="verifier-item"><span class="v-num">V08</span><span class="v-text">Working capital cost Supplier A, Dry Fruits 1kg = between ₹17.10 and ₹17.80 per 1,000 pouches, computed using 5.25% rate and 45-day payment terms,</span></div>
+              <div class="verifier-item"><span class="v-num">V09</span><span class="v-text">Inventory carrying cost Supplier B uses 22-day lead time (not 12 days). Any response using 12 days for both suppliers fails this check,</span></div>
+              <div class="verifier-item"><span class="v-num">V10</span><span class="v-text">TEC Supplier A, Dry Fruits 1kg = between ₹2,780 and ₹2,820 per 1,000 pouches,</span></div>
+              <div class="verifier-item"><span class="v-num">V11</span><span class="v-text">TEC Supplier B, Dry Fruits 1kg = between ₹2,685 and ₹2,730 per 1,000 pouches,</span></div>
+              <div class="verifier-item"><span class="v-num">V12</span><span class="v-text">Total annual cost Scenario A (100% Supplier A) = between ₹195 Lakh and ₹201 Lakh,</span></div>
+              <div class="verifier-item"><span class="v-num">V13</span><span class="v-text">Annual cost delta between Scenario A and Scenario B = between ₹0.5 Lakh and ₹1.2 Lakh,</span></div>
+              <div class="verifier-item"><span class="v-num">V14</span><span class="v-text">Supplier B weighted quality score from File 2 cited in the recommendation = 3.80 out of 5.0,</span></div>
+              <div class="verifier-item"><span class="v-num">V15</span><span class="v-text">Final recommendation = Retain Supplier A as sole vendor for FY25 (responses recommending dual-sourcing without conditional criteria fail; responses recommending outright rejection of Supplier B with no conditions also fail there must be forward-looking qualification criteria stated)</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.id === 'panel-' + tab));
+}
+</script>
+
+</body>
+</html>

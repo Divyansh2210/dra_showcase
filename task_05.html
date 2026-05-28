@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DRA-MC-05 · Operations Optimizat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --primary-0: #eef8ff; --primary-1: #d9eeff; --primary-2: #bbe3ff;
+  --primary-3: #8cd2ff; --primary-4: #56b9ff; --primary-5: #2f9aff;
+  --primary-6: #1279f7; --primary-7: #1165e4; --primary-8: #1551b8;
+  --neutrals-0: #0d0d0d; --neutrals-1: #3b3b3b; --neutrals-2: #666666;
+  --neutrals-3: #808080; --neutrals-4: #b3b3b3; --neutrals-5: #cccccc;
+  --neutrals-6: #d9d9d9; --neutrals-7: #e6e6e6; --neutrals-8: #f2f2f2;
+  --neutrals-85: #f5f5f5; --neutrals-9: #ffffff;
+  --accent-red-lite: #eedcda; --accent-red-dull: #eaaca5;
+  --accent-red: #ce2c31; --accent-red-dark: #641818;
+  --accent-green-lite: #d7e6dd; --accent-green-dull: #a1c9b2;
+  --accent-green: #218358; --accent-green-dark: #006d43;
+  --accent-yellow-lite: #fde1b1; --accent-yellow-dull: #efbd61;
+  --accent-yellow: #e7a300; --accent-yellow-dark: #8a5c00;
+  --accent-purple-lite: #b9beed; --accent-purple-dull: #6b71cf;
+  --accent-purple: #45478d; --accent-purple-dark: #303063;
+  --accent-blue-lite: #cbddef; --accent-blue-dull: #8db1dd;
+  --accent-blue: #0d74ce; --accent-blue-dark: #0062bb;
+  --delta-tag-id: #f5ebdc;
+  --radius-sm: 0.25rem; --radius-md: 0.375rem; --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem; --radius-2xl: 1rem; --radius-pill: 9999px;
+  --shadow-sm: 0 1px 2px rgba(13, 13, 13, 0.05);
+  --shadow-md: 0 1px 3px rgba(13, 13, 13, 0.08);
+  --shadow-lg: 0 4px 12px rgba(13, 13, 13, 0.10);
+  --shadow-xl: 0 10px 25px rgba(13, 13, 13, 0.12);
+  --shadow-focus: 0 0 0 2px rgba(13, 116, 206, 0.30);
+  --font-display: "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Consolas, monospace;
+}
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; scroll-behavior: smooth; }
+body {
+  background: var(--neutrals-85); font-family: var(--font-primary);
+  font-size: 1rem; line-height: 1.5; color: var(--neutrals-0);
+  -webkit-font-smoothing: antialiased;
+}
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--primary-0); }
+::-webkit-scrollbar-thumb { background: var(--accent-blue-lite); border-radius: var(--radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--neutrals-3); }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+
+/* ─── Sidebar ─── */
+#sidebar {
+  position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+  background: var(--neutrals-85);
+  border-right: 1px solid rgba(13, 13, 13, 0.07);
+  overflow-y: auto;
+  padding: 1.25rem 0.625rem;
+  z-index: 100;
+}
+.sb-brand {
+  display: block; font-family: var(--font-display);
+  font-size: 1.125rem; font-weight: 600;
+  color: var(--neutrals-1);
+  padding: 0 0.625rem; margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+.sb-section-label {
+  font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--neutrals-3); padding: 0 0.625rem;
+  margin: 1rem 0 0.5rem;
+}
+.sb-link {
+  display: flex; align-items: flex-start; gap: 0.5rem;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.125rem; line-height: 1.35;
+  transition: background 0.2s ease-in-out;
+}
+.sb-link:hover { background: var(--neutrals-8); }
+.sb-link.active { background: var(--primary-0); color: var(--primary-7); font-weight: 600; }
+.sb-link .sb-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; color: var(--neutrals-3);
+  flex-shrink: 0; min-width: 1.25rem; padding-top: 0.125rem;
+}
+.sb-link .sb-task-id { color: var(--neutrals-0); font-weight: 500; }
+.sb-link.active .sb-task-id { color: var(--primary-7); }
+.sb-link .sb-domain { display: block; color: var(--neutrals-2); font-size: 0.65rem; margin-top: 0.125rem; }
+.sb-link .sb-diff {
+  font-size: 0.5625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  margin-top: 0.125rem; display: inline-block;
+}
+.sb-diff-hard { color: var(--accent-red-dark); }
+.sb-diff-medium { color: var(--accent-yellow-dark); }
+.sb-diff-easy { color: var(--accent-green-dark); }
+.sb-summary {
+  display: block;
+  padding: 0.5rem 0.625rem;
+  color: var(--neutrals-1);
+  font-size: 0.8125rem;
+  border-radius: var(--radius-lg);
+  margin-bottom: 0.375rem;
+  font-weight: 500;
+  transition: background 0.2s ease-in-out;
+}
+.sb-summary:hover { background: var(--neutrals-8); }
+
+/* ─── Main ─── */
+#main { margin-left: 240px; max-width: 1440px; }
+
+/* ─── Topbar (sticky) ─── */
+.topbar {
+  display: flex; align-items: center; gap: 0.75rem;
+  padding: 0.75rem 2.25rem;
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  position: sticky; top: 0; z-index: 50;
+  flex-wrap: wrap;
+}
+.topbar-badge {
+  font-family: var(--font-mono);
+  font-size: 0.75rem; font-weight: 600;
+  background: var(--primary-6); color: var(--neutrals-9);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-md);
+  flex-shrink: 0;
+}
+.tag-domain {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--accent-purple-dark);
+  background: var(--accent-purple-lite);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.tag-type {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-1);
+  background: var(--delta-tag-id);
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--radius-pill);
+  flex-shrink: 0;
+}
+.pill {
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.pill-diff-hard { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.pill-diff-medium { background: var(--accent-yellow-lite); color: var(--accent-yellow-dark); }
+.pill-diff-easy { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.topbar-title {
+  font-size: 0.875rem; font-weight: 500;
+  color: var(--neutrals-2);
+  line-height: 1.35;
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.topbar-summary-link {
+  font-size: 0.8125rem; font-weight: 600;
+  color: var(--primary-6);
+  white-space: nowrap;
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease-in-out;
+}
+.topbar-summary-link:hover { background: var(--primary-0); }
+
+/* ─── Hero ─── */
+.hero {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 2rem 2.25rem 1.75rem;
+}
+.hero-eyebrow {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--primary-6);
+  margin-bottom: 0.5rem;
+}
+.hero-heading {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  color: var(--neutrals-0);
+  line-height: 1.23; letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+}
+.hero-desc {
+  font-size: 0.9375rem; color: var(--neutrals-2);
+  line-height: 1.6;
+  max-width: 60rem;
+  margin-bottom: 1.5rem;
+}
+
+/* Metric cards row */
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 1rem;
+  max-width: 60rem;
+}
+.metric-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-xl);
+  padding: 1rem 1.125rem 1.125rem;
+  box-shadow: var(--shadow-md);
+}
+.metric-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 0.875rem;
+}
+.badge-model {
+  color: var(--neutrals-9);
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  letter-spacing: 0.02em;
+}
+.badge-model-o3 { background: var(--accent-green); }
+.badge-model-claude { background: var(--accent-purple); }
+.badge-model-gemini { background: var(--accent-blue); }
+.metric-accept {
+  font-size: 0.625rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-pill);
+}
+.metric-accept.yes { background: var(--accent-green-lite); color: var(--accent-green-dark); }
+.metric-accept.no  { background: var(--accent-red-lite); color: var(--accent-red-dark); }
+.metric-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+.metric-stat { display: flex; flex-direction: column; gap: 0.25rem; }
+.metric-lbl {
+  font-size: 0.6875rem; font-weight: 500;
+  color: var(--neutrals-3);
+  text-transform: uppercase; letter-spacing: 0.04em;
+}
+.metric-lbl-suffix { font-weight: 400; text-transform: none; letter-spacing: 0; }
+.metric-val {
+  font-family: var(--font-display);
+  font-size: 1.5rem; font-weight: 600;
+  line-height: 1;
+}
+.score-low  { color: var(--accent-red-dark); }
+.score-mid  { color: var(--accent-yellow-dark); }
+.score-high { color: var(--accent-green-dark); }
+
+.accept-note {
+  margin-top: 1.25rem;
+  font-size: 0.8125rem;
+  color: var(--neutrals-2);
+  background: var(--neutrals-85);
+  border-left: 3px solid var(--neutrals-4);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  padding: 0.625rem 1rem;
+  line-height: 1.6;
+  max-width: 60rem;
+}
+.accept-note b { color: var(--neutrals-1); font-weight: 600; }
+
+/* ─── Section + inputs link ─── */
+.section-header { padding: 1.5rem 2.25rem 0; }
+.section-label {
+  font-size: 0.6875rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--neutrals-3);
+  margin-bottom: 0.5rem;
+}
+.section-meta { list-style: none; display: flex; flex-direction: column; gap: 0.25rem; margin: 0.25rem 0 0; }
+.section-meta li { font-size: 0.8125rem; color: var(--neutrals-2); line-height: 1.6; }
+.section-meta li b { color: var(--neutrals-1); font-weight: 600; }
+.ref-note {
+  margin-top: 0.875rem;
+  font-size: 0.8125rem;
+  display: inline-flex; align-items: center; gap: 0.375rem;
+}
+.ref-note a {
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.ref-note a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Tabs ─── */
+.tabs-wrap {
+  background: var(--neutrals-9);
+  border-bottom: 1px solid var(--neutrals-7);
+  padding: 0 2.25rem;
+  margin-top: 1.5rem;
+  display: flex;
+  gap: 0.25rem;
+  position: sticky; top: 3.25rem; z-index: 40;
+}
+.tab-item { display: inline-flex; align-items: center; gap: 0.125rem; position: relative; }
+.tab-btn {
+  background: none; border: none; cursor: pointer;
+  padding: 0.75rem 0.5rem 0.75rem 1rem;
+  font-family: inherit;
+  font-size: 0.875rem; font-weight: 600;
+  color: var(--neutrals-2);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: var(--neutrals-0); }
+.tab-btn.active { color: var(--primary-6); border-bottom-color: var(--primary-6); }
+.tab-btn:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; border-radius: var(--radius-sm); }
+.tab-info {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 1rem; height: 1rem;
+  margin-right: 0.5rem;
+  background: var(--neutrals-7);
+  color: var(--neutrals-2);
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.625rem; font-weight: 600;
+  border: none; cursor: help;
+  position: relative;
+}
+.tab-info:hover, .tab-info:focus { background: var(--neutrals-6); color: var(--neutrals-0); }
+.tab-info:focus-visible { outline: 2px solid var(--primary-6); outline-offset: 2px; }
+.tab-info .tab-pop {
+  display: none;
+  position: absolute; top: 1.75rem; left: 50%;
+  transform: translateX(-50%);
+  width: 15rem;
+  background: var(--neutrals-0);
+  color: var(--neutrals-9);
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-lg);
+  font-family: var(--font-primary);
+  font-size: 0.75rem; font-weight: 400;
+  line-height: 1.55; text-align: left;
+  box-shadow: var(--shadow-xl);
+  z-index: 60;
+  text-transform: none; letter-spacing: 0;
+  white-space: normal;
+}
+.tab-info:hover .tab-pop, .tab-info:focus .tab-pop, .tab-info:focus-within .tab-pop { display: block; }
+.panel { display: none; padding: 1.5rem 2.25rem 2rem; max-width: 76rem; }
+.panel.active { display: block; }
+
+.prompt-ref-link { margin-bottom: 1rem; font-size: 0.8125rem; }
+.prompt-ref-link a {
+  display: inline-flex; align-items: center; gap: 0.375rem;
+  color: var(--primary-6); font-weight: 600;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--accent-blue-lite);
+  border-radius: var(--radius-md);
+  background: var(--neutrals-9);
+  transition: all 0.2s ease-in-out;
+}
+.prompt-ref-link a:hover { background: var(--primary-0); border-color: var(--primary-6); }
+
+/* ─── Content blocks ─── */
+.prompt-card {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-left: 3px solid var(--primary-6);
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  white-space: pre-wrap;
+  box-shadow: var(--shadow-md);
+  max-height: 36rem;
+  overflow-y: auto;
+}
+.content-block {
+  background: var(--neutrals-9);
+  border: 1px solid var(--neutrals-7);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+  font-size: 0.9375rem;
+  color: var(--neutrals-1);
+  line-height: 1.7;
+  box-shadow: var(--shadow-md);
+}
+.content-block pre {
+  font-family: var(--font-primary);
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  white-space: pre-wrap;
+  color: var(--neutrals-1);
+}
+
+/* ─── Verifier list ─── */
+.verifier-list { display: flex; flex-direction: column; gap: 0.5rem; }
+.verifier-item {
+  display: flex; gap: 0.625rem; align-items: flex-start;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--neutrals-7);
+  background: var(--neutrals-9);
+  font-size: 0.875rem; line-height: 1.55;
+  box-shadow: var(--shadow-sm);
+}
+.verifier-item .v-num {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem; font-weight: 600;
+  color: var(--neutrals-3);
+  min-width: 1.75rem;
+  padding-top: 0.1875rem;
+}
+.verifier-item .v-text { color: var(--neutrals-1); flex: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<nav id="sidebar">
+<span class="sb-brand">DRA Showcase</span>
+<a class="sb-summary" href="index.html">Summary</a>
+<div class="sb-section-label">Tasks</div>
+<a class="sb-link" href="task_01.html"><span class="sb-num">01</span><span><span class="sb-task-id">DRA-MC-01</span><span class="sb-domain">Cost Optimization · CRP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_02.html"><span class="sb-num">02</span><span><span class="sb-task-id">DRA-MC-02</span><span class="sb-domain">Operations Research · LDP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_03.html"><span class="sb-num">03</span><span><span class="sb-task-id">DRA-MC-03</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_04.html"><span class="sb-num">04</span><span><span class="sb-task-id">DRA-MC-04</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link active" href="task_05.html"><span class="sb-num">05</span><span><span class="sb-task-id">DRA-MC-05</span><span class="sb-domain">Operations Optimization · RCP</span><span class="sb-diff sb-diff-hard">Hard</span></span></a>
+<a class="sb-link" href="task_06.html"><span class="sb-num">06</span><span><span class="sb-task-id">DRA-MC-06</span><span class="sb-domain">Operations Optimization · LDP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_07.html"><span class="sb-num">07</span><span><span class="sb-task-id">DRA-MC-07</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_08.html"><span class="sb-num">08</span><span><span class="sb-task-id">DRA-MC-08</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_09.html"><span class="sb-num">09</span><span><span class="sb-task-id">DRA-MC-09</span><span class="sb-domain">Market Strategy · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_10.html"><span class="sb-num">10</span><span><span class="sb-task-id">DRA-MC-10</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-medium">Medium</span></span></a>
+<a class="sb-link" href="task_11.html"><span class="sb-num">11</span><span><span class="sb-task-id">DRA-MC-11</span><span class="sb-domain">Cost Optimization · SCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link" href="task_12.html"><span class="sb-num">12</span><span><span class="sb-task-id">DRA-MC-12</span><span class="sb-domain">Cost Optimization · FSP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+<a class="sb-link" href="task_13.html"><span class="sb-num">13</span><span><span class="sb-task-id">DRA-MC-13</span><span class="sb-domain">Service Ops · RCP</span><span class="sb-diff sb-diff-easy">Easy</span></span></a>
+</nav>
+
+<div id="main">
+
+  <div class="topbar">
+    <span class="topbar-badge">DRA-MC-05</span>
+    <span class="tag-domain">Operations Optimizat</span>
+    <span class="tag-type">RCP</span>
+    <span class="pill pill-diff-hard">Hard</span>
+    <span class="topbar-title">A mid-sized container terminal on India&amp;#x27;s west coast is consistently failing its Berth Pro...</span>
+    <a class="topbar-summary-link" href="index.html">← Summary</a>
+  </div>
+
+  <section class="hero">
+    <div class="hero-eyebrow">Task 05 — Deep Research Agents Eval (Hard)</div>
+    <h1 class="hero-heading">DRA-MC-05</h1>
+    <p class="hero-desc">A mid-sized container terminal on India&amp;#x27;s west coast is consistently failing its Berth Productivity commitments to two key shipping line clients - a global FMCG carrier and a bulk chemical carrier, resulting in SLA penalty triggers and a risk of cont...</p>
+
+    <div class="metrics-row">
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-o3">OpenAI o3</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-low">1.40</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-low">6%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-claude">Claude</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-mid">2.40</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-mid">68%</div>
+            </div>
+          </div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-header">
+            <span class="badge-model badge-model-gemini">Gemini</span>
+            <span class="metric-accept no">Reject</span>
+          </div>
+          <div class="metric-stats">
+            <div class="metric-stat">
+              <div class="metric-lbl">Rubric <span class="metric-lbl-suffix">(0–3)</span></div>
+              <div class="metric-val score-mid">2.40</div>
+            </div>
+            <div class="metric-stat">
+              <div class="metric-lbl">Verifier pass</div>
+              <div class="metric-val score-mid">77%</div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="accept-note">
+      <b>ACCEPT criterion:</b> Verifier Pass Rate ≥ 80% <b>AND</b> rubric average ≥ 2.5 <b>AND</b> no individual rubric criterion scored 0. Rubric: 5 criteria (DI · AR · RF · EP · FD), each 0–3.
+    </div>
+  </section>
+
+  <div class="tabs-wrap">
+    <div class="tab-item">
+      <button class="tab-btn active" data-tab="prompt" onclick="setTab('prompt')">Prompt</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Prompt">i<span class="tab-pop">The exact prompt text shown to the agent, plus the reference files it was allowed to access.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="sanity" onclick="setTab('sanity')">Sanity check</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Sanity check">i<span class="tab-pop">Why the problem is well-specified, internally consistent, and deterministically solvable. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="solution" onclick="setTab('solution')">Solution logic</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Solution logic">i<span class="tab-pop">Expert-authored deterministic reasoning path with a published golden answer range. Not shown to agents.</span></button>
+    </div>
+    <div class="tab-item">
+      <button class="tab-btn" data-tab="verifiers" onclick="setTab('verifiers')">Verifiers</button>
+      <button class="tab-info" tabindex="0" aria-label="What's in Verifiers">i<span class="tab-pop">Atomic pass/fail facts used to grade the agent's response. Each verifier is a single independently checkable claim.</span></button>
+    </div>
+  </div>
+
+  <div id="panel-prompt" class="panel active">
+    <div class="prompt-ref-link"><a href="https://drive.google.com/drive/folders/1OEUgD7og9_MeeG4tRb2FkVp8VEXjWqIV" target="_blank" rel="noopener">Input files (Google Drive) ↗</a></div>
+    <div class="prompt-card">A mid-sized container terminal on India&#x27;s west coast is consistently failing its Berth Productivity commitments to two key shipping line clients - a global FMCG carrier and a bulk chemical carrier, resulting in SLA penalty triggers and a risk of contract non-renewal worth INR 340 million annually. The Terminal General Manager needs a recommendation within one week. A wrong intervention will either increase operating cost without improving berth productivity or misallocate crane and labor resources across vessel types, worsening overall OEE.
+ 
+ Using only the provided files, determine the true OEE level root cause of the berth productivity failure for each vessel type, identify which loss category - availability, performance, or quality is the primary driver, sequence the intervention priority across the two product lines using multi-product OEE and throughput logic, and recommend a single ranked intervention plan.
+ 
+ A structured operations document with the following sections in this exact order:
+ 1. OEE Breakdown Table - Availability, Performance, and Quality rates for each vessel type, with OEE calculated to two decimal places
+ 2. Loss Waterfall - Ranked loss contributors by vessel type in descending order of throughput impact
+ 3. Multi-Product Line Sequencing Decision - Which vessel type to prioritize first and why, using OEE and throughput logic
+ 4. Monthly Financial Impact Table - Penalty cost, lost throughput contribution, and total monthly exposure for each vessel type
+ 5. Ranked Intervention Plan - Exactly two interventions, one per vessel type, ranked by financial impact, with decision commit
+ Do not present prose only. Every section must follow the exact structure listed above.</div>
+  </div>
+
+  <div id="panel-sanity" class="panel">
+    <div class="content-block"><pre>Lazy AI Test: A standard model will use the headline crane utilization and average move rates from the summary tab, calculate both vessels as performing within acceptable range at approximately 85 to 89 percent utilization, miss the unplanned stoppage and re-handle buried signals, and recommend a generic crane addition for both berths, which is the highest-cost and least targeted intervention and the opposite of the correct answer.
+ 
+ Expert Test: A detailed model&#x27;s answer will use only the provided files, computing OEE from the shift log, move-rate, and quality tabs, applying multi-product sequencing logic, and following the exact document format would reach FMCG-first, preventive maintenance plus sequencing software, with OEE values of 73.8% and 79.7%. One correct answer exists.</pre></div>
+  </div>
+
+  <div id="panel-solution" class="panel">
+    <div class="content-block"><pre>1. Ignore the headline summary tab as the primary basis for diagnosis.
+ 2. Use vessel-type-specific analysis rather than terminal averages.
+ 3. For the FMCG vessel, planned operating time is 480 minutes, planned downtime is 30 minutes, available time is 450 minutes, average unplanned stoppages are 38 minutes, and actual uptime is 412 minutes. Availability is therefore 412 / 450 = 91.6 percent.
+ 4. For the chemical vessel, planned operating time is 480 minutes, planned downtime is 30 minutes, available time is 450 minutes, average unplanned stoppages are 18 minutes, and actual uptime is 432 minutes. Availability is therefore 432 / 450 = 96.0 percent.
+ 5. The contract notes set the FMCG gross crane-rate benchmark at 28 moves per hour. The intended actual average move rate from the move-rate log for FMCG is 23.4 moves per hour, so FMCG performance is 23.4 / 28 = 83.6 percent.
+ 6. The move-rate log and labor-roster footnotes show recurring move-rate dips during operator handover windows because crane operators are rotated every two hours across Berths 2 and 4. That means the FMCG performance loss is structurally linked to the shared operator pool rather than to yard, gate, or customs factors.
+ 7. The contract notes set the chemical vessel gross crane-rate benchmark at 22 moves per hour. The intended actual rate used in the worked answer is 20.1 moves per hour, so chemical performance is 20.1 / 22 = 91.4 percent.
+ 8. The FMCG move and quality logs show 160 attempted moves and 6 re-handle moves, leaving 154 good moves. FMCG quality is therefore 154 / 160 = 96.3 percent.
+ 9. The chemical quality log shows 145 attempted moves and 13.3 re-handle moves, leaving 131.7 good moves. Chemical quality is therefore 131.7 / 145 = 90.8 percent.
+ 10. The quality log states the chemical vessel’s re-handle rate is 9.2 percent and that 71 percent of these re-handles are due to container sequencing errors. Therefore the dominant quality loss driver for the chemical line is sequencing failure, not mechanical downtime.
+ 11. FMCG OEE is therefore 91.6 × 83.6 × 96.3 = 73.8
+ 12. Chemical OEE is 96.0 × 91.4 × 90.8 = 79.7
+ 13. The contract notes specify an OEE floor of 80 percent for both vessel types. FMCG at 73.8 percent is below the floor by 6.2 points, and chemical at 79.7 percent is below the floor by 0.3 points, so both lines are technically non-compliant, but FMCG is materially worse.
+ 14. FMCG’s three loss factors versus ideal are:
+ Availability loss = 100.0 - 91.6 = 8.4% points
+ Performance loss = 100.0 - 83.6 = 16.4%points
+ Quality loss = 100.0 - 96.3 = 3.7% points
+ Therefore FMCG’s largest loss contributor is performance, followed by availability, then quality.
+ 15. Chemical’s three loss factors versus ideal are:
+ Availability loss = 100.0 - 96.0 = 4.0 % points
+ Performance loss = 100.0 - 91.4 = 8.6 % points
+ Quality loss = 100.0 - 90.8 = 9.2 % points
+ Therefore chemical’s largest loss contributor is quality, followed by performance, then availability.
+ 16. For FMCG, the primary root cause is the combination of handover-driven performance loss and recurrent unplanned stoppages, with performance the single largest loss bucket. For chemical, the primary root cause is quality loss from sequencing-related re-handles.
+ 17. The contract is enforced on a per-call basis, not monthly aggregate basis. The intended actual good moves are 154 per FMCG call and 127 per chemical call
+ 18. The contracts trigger penalties below 95 percent of committed moves:
+ FMCG minimum good moves = 165 × 95% = 157
+ Chemical minimum good moves = 140 × 95% = 133
+ 19. Comparing actual good moves with the minimum threshold:
+ FMCG shortfall per call = 157 - 154 = 3
+ Chemical shortfall per call = 133 - 127 = 6
+ 20. FMCG penalty per call = 3 × 4200 = 12600
+ Chemical penalty per call = 6 × 3800 = 22800
+ 21. FMCG monthly penalty = 12600 × 8 = 100800
+ Chemical monthly penalty = 22800 × 6 = 136800
+ Total monthly penalty = 237600
+ 22. FMCG monthly contribution = 12768000
+ Chemical monthly contribution = 9576,000
+ 23. FMCG total monthly exposure = 12768000 + 100800 = 12868800
+ Chemical total monthly exposure = 9576000 + 136800 = 9712800
+ Total combined exposure = 22581600
+ 24. FMCG must be prioritized first because it has the lower OEE, the larger OEE gap, and the higher monthly financial exposure, so fixing FMCG first improves total terminal performance more than fixing chemical first.
+ 25. FMCG Preventive maintenance: 150000/month
+ FMCG Dedicated crane operator pool: 280000/month
+ 26. Chemical Sequencing software: 180000/month
+ Chemical Additional quay crane: 920000/month
+ 27. The correct ranked intervention plan is:
+ Rank 1: Preventive maintenance schedule upgrade for FMCG carrier
+ Rank 2: Container sequencing software upgrade for chemical carrier</pre></div>
+  </div>
+
+  <div id="panel-verifiers" class="panel">
+    <div class="verifier-list">
+              <div class="verifier-item"><span class="v-num">V01</span><span class="v-text">Rejects the Terminal_KPI_Summary headline averages as the primary basis for diagnosis.</span></div>
+              <div class="verifier-item"><span class="v-num">V02</span><span class="v-text">Uses vessel-type-specific analysis rather than terminal-average analysis.</span></div>
+              <div class="verifier-item"><span class="v-num">V03</span><span class="v-text">Uses 480 min as planned operating time for both vessel types.</span></div>
+              <div class="verifier-item"><span class="v-num">V04</span><span class="v-text">Uses 30 min as planned downtime for both vessel types.</span></div>
+              <div class="verifier-item"><span class="v-num">V05</span><span class="v-text">Calculates available time as 450 min for both vessel types.</span></div>
+              <div class="verifier-item"><span class="v-num">V06</span><span class="v-text">Uses 38 min as average unplanned stoppages for the FMCG carrier.</span></div>
+              <div class="verifier-item"><span class="v-num">V07</span><span class="v-text">Calculates FMCG actual uptime as 412 min.</span></div>
+              <div class="verifier-item"><span class="v-num">V08</span><span class="v-text">Calculates FMCG availability as 91.6%.</span></div>
+              <div class="verifier-item"><span class="v-num">V09</span><span class="v-text">Uses 18 min as average unplanned stoppages for the chemical carrier.</span></div>
+              <div class="verifier-item"><span class="v-num">V10</span><span class="v-text">Calculates chemical actual uptime as 432 min.</span></div>
+              <div class="verifier-item"><span class="v-num">V11</span><span class="v-text">Calculates chemical availability as 96%.</span></div>
+              <div class="verifier-item"><span class="v-num">V12</span><span class="v-text">Uses 28 moves/hour as the FMCG ideal crane-rate benchmark.</span></div>
+              <div class="verifier-item"><span class="v-num">V13</span><span class="v-text">Uses 23.4 moves/hour as the FMCG actual move rate.</span></div>
+              <div class="verifier-item"><span class="v-num">V14</span><span class="v-text">Calculates FMCG performance as 83.6%.</span></div>
+              <div class="verifier-item"><span class="v-num">V15</span><span class="v-text">Identifies FMCG performance loss as linked to shared crane operator rotation / handover dips.</span></div>
+              <div class="verifier-item"><span class="v-num">V16</span><span class="v-text">Uses 22 moves/hour as the chemical ideal crane-rate benchmark.</span></div>
+              <div class="verifier-item"><span class="v-num">V17</span><span class="v-text">Uses 20.1 moves/hour as the chemical actual move rate.</span></div>
+              <div class="verifier-item"><span class="v-num">V18</span><span class="v-text">Calculates chemical performance as 91.4%.</span></div>
+              <div class="verifier-item"><span class="v-num">V19</span><span class="v-text">Uses 160 attempted moves for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V20</span><span class="v-text">Uses 6 re-handle moves for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V21</span><span class="v-text">Calculates FMCG good moves as 154.</span></div>
+              <div class="verifier-item"><span class="v-num">V22</span><span class="v-text">Calculates FMCG quality as 96.3%.</span></div>
+              <div class="verifier-item"><span class="v-num">V23</span><span class="v-text">Uses 145 attempted moves for chemical.</span></div>
+              <div class="verifier-item"><span class="v-num">V24</span><span class="v-text">Uses 13.3 re-handle moves for chemical.</span></div>
+              <div class="verifier-item"><span class="v-num">V25</span><span class="v-text">Calculates chemical good moves as 131.7</span></div>
+              <div class="verifier-item"><span class="v-num">V26</span><span class="v-text">Calculates chemical quality as 90.8%</span></div>
+              <div class="verifier-item"><span class="v-num">V27</span><span class="v-text">Calculates FMCG OEE as 73.8%</span></div>
+              <div class="verifier-item"><span class="v-num">V28</span><span class="v-text">Calculates chemical OEE as 79.7%</span></div>
+              <div class="verifier-item"><span class="v-num">V29</span><span class="v-text">Identifies FMCG as below the 80% OEE floor by a larger margin than chemical</span></div>
+              <div class="verifier-item"><span class="v-num">V30</span><span class="v-text">Identifies chemical as also below the 80% OEE floor</span></div>
+              <div class="verifier-item"><span class="v-num">V31</span><span class="v-text">Calculates FMCG availability loss as 8.4 percentage points.</span></div>
+              <div class="verifier-item"><span class="v-num">V32</span><span class="v-text">Calculates FMCG performance loss as 16.4 percentage points</span></div>
+              <div class="verifier-item"><span class="v-num">V33</span><span class="v-text">Calculates FMCG quality loss as 3.7 percentage points.</span></div>
+              <div class="verifier-item"><span class="v-num">V34</span><span class="v-text">Ranks FMCG loss contributors as Performance &gt; Availability &gt; Quality.</span></div>
+              <div class="verifier-item"><span class="v-num">V35</span><span class="v-text">Calculates chemical availability loss as 4.0 percentage points.</span></div>
+              <div class="verifier-item"><span class="v-num">V36</span><span class="v-text">Calculates chemical performance loss as 8.6 percentage points.</span></div>
+              <div class="verifier-item"><span class="v-num">V37</span><span class="v-text">Calculates chemical quality loss as 9.2 percentage points.</span></div>
+              <div class="verifier-item"><span class="v-num">V38</span><span class="v-text">Ranks chemical loss contributors as Quality &gt; Performance &gt; Availability.</span></div>
+              <div class="verifier-item"><span class="v-num">V39</span><span class="v-text">Identifies the chemical carrier’s dominant root cause as container sequencing errors.</span></div>
+              <div class="verifier-item"><span class="v-num">V40</span><span class="v-text">Uses 71% of chemical re-handles as caused by sequencing errors.</span></div>
+              <div class="verifier-item"><span class="v-num">V41</span><span class="v-text">Uses 165 as FMCG committed moves per call.</span></div>
+              <div class="verifier-item"><span class="v-num">V42</span><span class="v-text">Uses 140 as chemical committed moves per call.</span></div>
+              <div class="verifier-item"><span class="v-num">V43</span><span class="v-text">Uses 95% as the SLA threshold for both vessel types.</span></div>
+              <div class="verifier-item"><span class="v-num">V44</span><span class="v-text">Calculates FMCG minimum good moves threshold as 157.</span></div>
+              <div class="verifier-item"><span class="v-num">V45</span><span class="v-text">Calculates chemical minimum good moves threshold as 133.</span></div>
+              <div class="verifier-item"><span class="v-num">V46</span><span class="v-text">Uses 154 as FMCG actual good moves per call for penalty analysis.</span></div>
+              <div class="verifier-item"><span class="v-num">V47</span><span class="v-text">Uses 127 as chemical actual good moves per call for penalty analysis.</span></div>
+              <div class="verifier-item"><span class="v-num">V48</span><span class="v-text">Calculates FMCG shortfall per call as 3 moves.</span></div>
+              <div class="verifier-item"><span class="v-num">V49</span><span class="v-text">Calculates chemical shortfall per call as 6 moves.</span></div>
+              <div class="verifier-item"><span class="v-num">V50</span><span class="v-text">Uses 4200 as FMCG penalty per missed move.</span></div>
+              <div class="verifier-item"><span class="v-num">V51</span><span class="v-text">Uses 3800 as chemical penalty per missed move.</span></div>
+              <div class="verifier-item"><span class="v-num">V52</span><span class="v-text">Calculates FMCG penalty per call as INR 12600</span></div>
+              <div class="verifier-item"><span class="v-num">V53</span><span class="v-text">Calculates chemical penalty per call as INR 22800</span></div>
+              <div class="verifier-item"><span class="v-num">V54</span><span class="v-text">Uses 8 calls/month for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V55</span><span class="v-text">Uses 6 calls/month for chemical.</span></div>
+              <div class="verifier-item"><span class="v-num">V56</span><span class="v-text">Calculates FMCG monthly penalty as 100800.</span></div>
+              <div class="verifier-item"><span class="v-num">V57</span><span class="v-text">Calculates chemical monthly penalty as 136800.</span></div>
+              <div class="verifier-item"><span class="v-num">V58</span><span class="v-text">Calculates total monthly penalty as 237600.</span></div>
+              <div class="verifier-item"><span class="v-num">V59</span><span class="v-text">Uses 12768,000 as FMCG monthly contribution at risk.</span></div>
+              <div class="verifier-item"><span class="v-num">V60</span><span class="v-text">Uses 9576000 as chemical monthly contribution at risk.</span></div>
+              <div class="verifier-item"><span class="v-num">V61</span><span class="v-text">Calculates FMCG total monthly exposure as 12868800.</span></div>
+              <div class="verifier-item"><span class="v-num">V62</span><span class="v-text">Calculates chemical total monthly exposure as 9712800.</span></div>
+              <div class="verifier-item"><span class="v-num">V63</span><span class="v-text">Calculates combined monthly exposure as 22581600.</span></div>
+              <div class="verifier-item"><span class="v-num">V64</span><span class="v-text">Prioritizes FMCG first in the multi-product sequencing decision.</span></div>
+              <div class="verifier-item"><span class="v-num">V65</span><span class="v-text">Justifies FMCG-first sequencing using both lower OEE and higher monthly exposure.</span></div>
+              <div class="verifier-item"><span class="v-num">V66</span><span class="v-text">Evaluates preventive maintenance schedule upgrade for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V67</span><span class="v-text">Uses INR 150,000/month as the monthly cost of FMCG preventive maintenance.</span></div>
+              <div class="verifier-item"><span class="v-num">V68</span><span class="v-text">Uses +4.8% OEE as the expected improvement from FMCG preventive maintenance.</span></div>
+              <div class="verifier-item"><span class="v-num">V69</span><span class="v-text">Evaluates dedicated crane operator pool per berth for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V70</span><span class="v-text">Uses 280000/month as the monthly cost of the dedicated operator pool.</span></div>
+              <div class="verifier-item"><span class="v-num">V71</span><span class="v-text">Uses +4.2% OEE as the expected improvement from the dedicated operator pool.</span></div>
+              <div class="verifier-item"><span class="v-num">V72</span><span class="v-text">Selects preventive maintenance over dedicated operator pool for FMCG.</span></div>
+              <div class="verifier-item"><span class="v-num">V73</span><span class="v-text">Evaluates container sequencing software upgrade for chemical.</span></div>
+              <div class="verifier-item"><span class="v-num">V74</span><span class="v-text">Uses 180,000/month as the monthly cost of the chemical sequencing software.</span></div>
+              <div class="verifier-item"><span class="v-num">V75</span><span class="v-text">Uses +6.1% OEE as the expected improvement from the chemical sequencing software.</span></div>
+              <div class="verifier-item"><span class="v-num">V76</span><span class="v-text">Rejects additional quay crane for Berth 4 as the recommended intervention.</span></div>
+              <div class="verifier-item"><span class="v-num">V77</span><span class="v-text">Uses 920,000/month as the monthly cost of the additional quay crane option.</span></div>
+              <div class="verifier-item"><span class="v-num">V78</span><span class="v-text">States that the additional quay crane does not address the root cause.</span></div>
+              <div class="verifier-item"><span class="v-num">V79</span><span class="v-text">Rejects gate process redesign as a non-berth-OEE intervention.</span></div>
+              <div class="verifier-item"><span class="v-num">V80</span><span class="v-text">Rejects yard crane automation as a non-berth-OEE intervention.</span></div>
+              <div class="verifier-item"><span class="v-num">V81</span><span class="v-text">Recommends Preventive maintenance schedule upgrade as Rank 1.</span></div>
+              <div class="verifier-item"><span class="v-num">V82</span><span class="v-text">Recommends Container sequencing software upgrade as Rank 2.</span></div>
+              <div class="verifier-item"><span class="v-num">V83</span><span class="v-text">Uses the exact required section order: OEE Breakdown Table, Loss Waterfall, Multi-Product Line Sequencing Decision, Monthly Financial Impact Table, Ranked Intervention Plan.</span></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function setTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.toggle('active', el.dataset.tab === tab));
+  document.querySelectorAll('.panel').forEach(el => el.classList.toggle('active', el.id === 'panel-' + tab));
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Node (in case anyone adds tooling later)
+node_modules/
+package-lock.json
+yarn.lock
+
+# Internal working files — not part of the public deliverable
+critique.md
+quality_block_mockup.html
+
+# Broken sandbox git directory
+.git.sandbox-broken/
